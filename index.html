@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Ocak Takip v4</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { margin: 0; font-family: sans-serif; display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 350px; border-right: 1px solid #ccc; background: #fff; overflow-y: auto; display: flex; flexDirection: column; }
+        .map { flex: 1; background: #eee; }
+        .btn { padding: 10px; cursor: pointer; border: none; border-radius: 4px; margin: 5px; font-weight: bold; }
+        .ocak-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .ocak-item:hover { background: #f0f7ff; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState } = React;
+        function App() {
+            const [role, setRole] = useState('GUEST');
+            const [selected, setSelected] = useState(null);
+            const ocaklar = [
+                { id: 1, name: 'ARSİM KALKER OCAĞI', lat: 38.2765, lng: 40.0615 },
+                { id: 2, name: 'KARAŞİN BAZALT OCAĞI', lat: 38.0523, lng: 40.0758 },
+                { id: 3, name: 'ÇAYIRLI KALKER OCAĞI', lat: 37.3495, lng: 41.4358 },
+                { id: 4, name: 'SULAKLI TOPLAMA BAZALT', lat: 37.8179, lng: 40.5219 }
+            ];
+            const login = () => {
+                const p = prompt("Şifre:");
+                if(p === "1234") setRole('ADMIN');
+            };
+            return (
+                <div style={{display:'flex', width:'100%'}}>
+                    <div className="sidebar">
+                        <div style={{padding:'20px', background:'#2563eb', color:'#fff'}}>
+                            <h3 style={{margin:0}}>Ocak Takip</h3>
+                            <button className="btn" onClick={login}>{role === 'GUEST' ? 'Yönetici Girişi' : 'Admin Aktif'}</button>
+                        </div>
+                        <div style={{flex:1}}>
+                            {ocaklar.map(o => (
+                                <div key={o.id} className="ocak-item" onClick={() => setSelected(o)}>
+                                    <strong>{o.name}</strong><br/>
+                                    <small>{o.lat}, {o.lng}</small>
+                                </div>
+                            ))}
+                        </div>
+                        {selected && (
+                            <div style={{padding:'20px', background:'#f8fafc', borderTop:'2px solid #2563eb'}}>
+                                <h4>{selected.name}</h4>
+                                <button className="btn" style={{background:'#10b981', color:'#fff', width:'100%'}} onClick={() => window.open(`https://www.google.com/maps/embed/v1/place?key=BURAYA_VARSA_API_KEY_GELECEK&q=Türkiye3{selected.lat},${selected.lng}`)}>Yol Tarifi</button>
+                            </div>
+                        )}
+                    </div>
+                    <div className="map">
+                        <iframe src={selected ? `https://maps.google.com/maps?q=${selected.lat},${selected.lng}&z=14&output=embed` : `https://maps.google.com/maps?q=Türkiye&z=6&output=embed`} width="100%" height="100%" style={{border:0}}></iframe>
+                    </div>
+                </div>
+            );
+        }
+        ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+    </script>
+</body>
+</html>
